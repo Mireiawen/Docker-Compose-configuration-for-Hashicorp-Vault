@@ -1,0 +1,40 @@
+---
+## /* vim: set tabstop=2 softtabstop=2 shiftwidth=2 expandtab smarttab autoindent: */
+
+version: '3.7'
+
+services:
+  vault:
+    image: 'vault:latest'
+    command: 'server'
+    cap_add:
+    - 'IPC_LOCK'
+    restart: 'always'
+    volumes:
+    - type: 'bind'
+      source: '/var/log/vault'
+      target: '/vault/logs'
+    - type: 'bind'
+      source: '/etc/vault'
+      target: '/vault/config'
+    - type: 'volume'
+      source: 'files'
+      target: '/vault/file'
+    network_mode: 'bridge'
+    hostname: 'vault.$DOMAIN'
+    container_name: 'vault'
+    labels:
+    - 'traefik.enable=true'
+    - 'traefik.http.routers.vault.rule=Host(`vault.$DOMAIN`)'
+    - 'traefik.http.routers.vault.entrypoints=web'
+    - 'traefik.http.routers.vault.middlewares=http-to-https'
+    - 'traefik.http.routers.vault.service=vault'
+    - 'traefik.http.routers.vault-secure.rule=Host(`vault.$DOMAIN`)'
+    - 'traefik.http.routers.vault-secure.entrypoints=websecure'
+    - 'traefik.http.routers.vault-secure.service=vault'
+    - 'traefik.http.middlewares.http-to-https.redirectscheme.scheme=https'
+    - 'traefik.http.middlewares.http-to-https.redirectscheme.permanent=true'
+    - 'traefik.http.services.vault.loadbalancer.passhostheader=true'
+
+volumes:
+  files: {}

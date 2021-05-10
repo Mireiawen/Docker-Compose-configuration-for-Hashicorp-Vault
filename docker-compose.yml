@@ -21,19 +21,17 @@ services:
       source: 'files'
       target: '/vault/file'
     network_mode: 'bridge'
-    hostname: 'vault.$DOMAIN'
+    hostname: '$HOSTNAME.$DOMAIN'
     container_name: 'vault'
     labels:
     - 'traefik.enable=true'
-    - 'traefik.http.routers.vault.rule=Host(`vault.$DOMAIN`)'
+    - 'traefik.http.routers.vault.rule=Host(`$HOSTNAME.$DOMAIN`)'
     - 'traefik.http.routers.vault.entrypoints=web'
     - 'traefik.http.routers.vault.middlewares=http-to-https'
     - 'traefik.http.routers.vault.service=vault'
-    - 'traefik.http.routers.vault-secure.rule=Host(`vault.$DOMAIN`)'
+    - 'traefik.http.routers.vault-secure.rule=Host(`$HOSTNAME.$DOMAIN`)'
     - 'traefik.http.routers.vault-secure.entrypoints=websecure'
     - 'traefik.http.routers.vault-secure.service=vault'
-    - 'traefik.http.middlewares.http-to-https.redirectscheme.scheme=https'
-    - 'traefik.http.middlewares.http-to-https.redirectscheme.permanent=true'
     - 'traefik.http.services.vault.loadbalancer.passhostheader=true'
 
 volumes:

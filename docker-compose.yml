@@ -9,7 +9,7 @@ services:
     command: 'server'
     cap_add:
     - 'IPC_LOCK'
-    restart: 'always'
+    restart: 'unless-stopped'
     volumes:
     - type: 'bind'
       source: '/var/log/vault'
@@ -20,14 +20,15 @@ services:
     - type: 'volume'
       source: 'files'
       target: '/vault/file'
-    network_mode: 'bridge'
     hostname: '$HOSTNAME.$DOMAIN'
+    networks:
+    - 'traefik'
     container_name: 'vault'
     labels:
     - 'traefik.enable=true'
     - 'traefik.http.routers.vault.rule=Host(`$HOSTNAME.$DOMAIN`)'
     - 'traefik.http.routers.vault.entrypoints=web'
-    - 'traefik.http.routers.vault.middlewares=http-to-https'
+    - 'traefik.http.routers.vault.middlewares=http-to-https@file'
     - 'traefik.http.routers.vault.service=vault'
     - 'traefik.http.routers.vault-secure.rule=Host(`$HOSTNAME.$DOMAIN`)'
     - 'traefik.http.routers.vault-secure.entrypoints=websecure'
@@ -36,3 +37,7 @@ services:
 
 volumes:
   files: {}
+
+networks:
+  traefik:
+    external: true

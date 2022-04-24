@@ -13,11 +13,11 @@ services:
     networks:
     - 'traefik'
     volumes:
-    - type: 'bind'
-      source: '/var/log/vault'
+    - type: 'volume'
+      source: 'logs'
       target: '/vault/logs'
-    - type: 'bind'
-      source: '/etc/vault'
+    - type: 'volume'
+      source: 'config'
       target: '/vault/config'
     - type: 'volume'
       source: 'files'
@@ -36,4 +36,6 @@ networks:
     external: true
 
 volumes:
+  logs: {}
+  config: {}
   files: {}

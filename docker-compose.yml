@@ -10,6 +10,8 @@ services:
     cap_add:
     - 'IPC_LOCK'
     restart: 'unless-stopped'
+    networks:
+    - 'traefik'
     volumes:
     - type: 'bind'
       source: '/var/log/vault'
@@ -20,21 +22,18 @@ services:
     - type: 'volume'
       source: 'files'
       target: '/vault/file'
-    hostname: '$HOSTNAME.$DOMAIN'
-    networks:
-    - 'traefik'
-    container_name: 'vault'
     labels:
     - 'traefik.enable=true'
+    - 'traefik.docker.network=traefik'
     - 'traefik.http.routers.vault.rule=Host(`$HOSTNAME.$DOMAIN`)'
     - 'traefik.http.routers.vault.entrypoints=websecure'
     - 'traefik.http.routers.vault.middlewares=$MIDDLEWARE'
     - 'traefik.http.routers.vault.service=vault'
     - 'traefik.http.services.vault.loadbalancer.passhostheader=true'
 
-volumes:
-  files: {}
-
 networks:
   traefik:
     external: true
+
+volumes:
+  files: {}
